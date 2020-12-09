@@ -1,0 +1,48 @@
+/*
+Map-Reduce in HIVE
+Simple 
+
+Movie recommendation using reviews given by users.
+Correlation between two movies is used to recommend a movie.
+A data set contains user_id, movie_id, rating, timestamp.
+One user can review many movies.
+Find the correlation between pairs of movies reviewed by same users.
+eg. 	usr1 reviewed mv1 and mv2
+	usr2 reviewed mv1 and mv2
+	usr3 reviewed mv1 and mv2
+	-------------------------
+find the correlation between mv1 and mv2 
+*/
+
+select m1.movieid,m2.movieid,m1.rating,m2.rating from ratings as m1 inner join ratings as m2 where m1.id=m2.id and m1.movieid<m2.movieid;
+
+
+CREATE TABLE ratingspair(movie1 INT, movie2 INT, rating1 decimal(8,2),rating2 decimal(8,2)) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
+
+
+insert into ratingspair (select m1.movieid,m2.movieid,m1.rating,m2.rating from ratings as m1 inner join ratings as m2 where m1.id=m2.id and m1.movieid<m2.movieid);
+
+/*
+select * from ratingspair;
++---------------------+---------------------+----------------------+----------------------+
+| ratingspair.movie1  | ratingspair.movie2  | ratingspair.rating1  | ratingspair.rating2  |
++---------------------+---------------------+----------------------+----------------------+
+| 19                  | 21                  | 2.00                 | 1.00                 |
+| 19                  | 70                  | 2.00                 | 4.00                 |
+| 21                  | 70                  | 1.00                 | 4.00                 |
+| 19                  | 21                  | 1.00                 | 2.00                 |
++---------------------+---------------------+----------------------+----------------------+
+4 rows selected (0.298 seconds)
+*/
+
+select movie1,movie2,corr(rating1,rating2) from ratingspair group by movie1, movie2;
+/*
++---------+---------+----------------------+
+| movie1  | movie2  |         _c2          |
++---------+---------+----------------------+
+| 19      | 21      | -0.9999999999999999  |
+| 19      | 70      | NULL                 |
+| 21      | 70      | NULL                 |
++---------+---------+----------------------+
+3 rows selected (30.555 seconds)
+*/
