@@ -11,4 +11,10 @@ eg. 	usr1 reviewed mv1 and mv2
 	usr3 reviewed mv1 and mv2
 	-------------------------
 find the correlation between mv1 and mv2 
+
+Data is stored in hadoop.
+Map-reduce job is performed in Hadoop
+Chained map-reduce job is performed where output of first reducer is given as input to second mapper.
+Custom writables are used.
+
 */
